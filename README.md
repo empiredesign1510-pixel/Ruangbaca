@@ -1,82 +1,73 @@
-# RuangBaca v5 — Paste Link Google Drive
+# RuangBaca v6 — Immersive Bookshelf
 
-Versi ini tidak memakai `GOOGLE_DRIVE_API_KEY`. Katalog dibaca melalui Google Apps Script, sedangkan PDF publik dialirkan melalui endpoint Vercel `/api/pdf` agar tetap terbuka di reader RuangBaca.
+Upgrade UI/UX perpustakaan digital dengan katalog seperti rak buku, cover otomatis dari halaman pertama PDF, kategori Google Drive, animasi membuka buku, dan reader responsif.
 
-## Fitur
+## Fitur baru
 
-- Paste link folder Google Drive dari HP.
-- Memindai PDF, subfolder, dan shortcut folder secara rekursif.
-- Mencegah loop dan duplikasi file.
-- Maksimum 2.500 PDF, kedalaman 10 folder.
-- Katalog dirender per 100 buku agar 1.999+ item tidak membuat HP berat.
-- Mobile satu halaman; desktop dua halaman.
-- Swipe, tombol navigasi, slider, zoom, fullscreen, dan PDF lokal.
-- Tidak membutuhkan Google Cloud API key atau environment variable Vercel.
+- Katalog modern terinspirasi rak toko buku.
+- Kategori otomatis mengikuti folder tingkat pertama di Google Drive.
+- Pencarian judul, kategori, dan path folder.
+- Cover dibuat otomatis dari halaman pertama setiap PDF.
+- Cover dimuat secara lazy, maksimal dua proses bersamaan, lalu disimpan di Cache Storage browser.
+- Klik cover menjalankan animasi buku terbuka sebelum masuk ke reader.
+- Reader dua halaman di desktop dan satu halaman di HP.
+- Swipe, tombol halaman, slider, zoom 65–180%, fullscreen, dan keyboard arrow.
+- Light mode dan dark mode tersimpan otomatis.
+- Katalog besar dirender bertahap per kategori agar tetap ringan.
+- Tidak membutuhkan Google Drive API key.
 
-## Setup konektor Apps Script — satu kali
+## Setup Apps Script — satu kali
 
-1. Buka `https://script.google.com` memakai akun Google yang dapat membaca folder.
-2. Pilih **New project**.
-3. Buka file `apps-script/Code.gs` dari paket ini, salin seluruh isinya, lalu tempel menggantikan isi editor Apps Script.
-4. Klik **Deploy → New deployment**.
-5. Pilih type **Web app**.
-6. Atur:
-   - **Execute as:** Me
-   - **Who has access:** Anyone
-7. Klik **Deploy**, setujui otorisasi Drive, lalu salin URL yang berakhir `/exec`.
-8. Jangan memakai URL `/dev`.
+1. Buka `https://script.google.com` dan buat project baru.
+2. Salin seluruh isi `apps-script/Code.gs` ke editor Apps Script.
+3. Pilih **Deploy → New deployment → Web app**.
+4. Atur **Execute as: Me** dan **Who has access: Anyone**.
+5. Setujui otorisasi Drive dan salin URL yang berakhir `/exec`.
 
-`apps-script/appsscript.json` disertakan sebagai referensi manifest, tetapi setup paling sederhana hanya membutuhkan `Code.gs`.
+## Deploy ke Vercel
 
-## Deploy website ke Vercel
+Upload seluruh isi ZIP sebagai root project. Tidak ada environment variable yang wajib ditambahkan.
 
-Upload seluruh isi paket sebagai root project. Pastikan file berikut ikut:
+File utama:
 
 - `index.html`
+- `styles.css`
+- `app.js`
 - `api/pdf.js`
-- `package.json`
+- `apps-script/Code.gs`
 - `vercel.json`
-- `demo-book.pdf`
 
-Tidak perlu menambahkan `GOOGLE_DRIVE_API_KEY` atau `DRIVE_FOLDER_ID`.
+## Menghubungkan koleksi
 
-## Cara menggunakan
+1. Buka website.
+2. Tekan **Tambah koleksi**.
+3. Paste link folder Google Drive.
+4. Paste URL Apps Script `/exec` pada setup pertama.
+5. Tekan **Tampilkan semua PDF**.
 
-1. Buka RuangBaca.
-2. Tekan menu koleksi.
-3. Tekan **Tambah folder Drive**.
-4. Paste link folder Google Drive.
-5. Paste URL Apps Script `/exec` pada setup pertama.
-6. Tekan **Tampilkan semua PDF**.
+Folder utama, file PDF, dan target shortcut harus dapat diakses sebagai **Anyone with the link → Viewer** agar cover dan PDF dapat dibaca melalui proxy Vercel.
 
-URL konektor dan folder disimpan di `localStorage` perangkat. Pada pembukaan berikutnya katalog akan tersinkron otomatis.
+## Performa cover
 
-## Izin Google Drive
+Cover tidak dibuat sekaligus untuk seluruh koleksi. Hanya kartu yang mendekati area layar yang diproses. Hasil cover disimpan di browser sehingga kunjungan berikutnya lebih cepat.
 
-Folder utama dan file yang akan dibaca harus berizin:
-
-```text
-Anyone with the link → Viewer
-```
-
-Target shortcut juga harus dapat diakses. Konektor Apps Script dapat membaca katalog menggunakan akun pemilik script, tetapi endpoint PDF Vercel hanya dapat mengunduh file yang publik.
-
-## Pengujian
+## Pengujian lokal
 
 ```bash
 node --test tests/api.test.js
 python3 tests/mock_server.py
 ```
 
-Kemudian buka `http://127.0.0.1:8767/index.html`. Untuk simulasi konektor, gunakan:
+Buka `http://127.0.0.1:8767/index.html`, lalu gunakan:
 
 ```text
-Link folder: https://drive.google.com/drive/folders/11jov9nAQ3aWPFZh17U63dlpo662R7hSS
-URL konektor: http://127.0.0.1:8767/apps-script
+Folder: https://drive.google.com/drive/folders/11jov9nAQ3aWPFZh17U63dlpo662R7hSS
+Konektor: http://127.0.0.1:8767/apps-script
 ```
 
-## Batasan
+## Catatan
 
-- Apps Script mempunyai kuota dan batas waktu eksekusi. Katalog besar pertama kali dapat membutuhkan waktu lebih lama; hasilnya di-cache 15 menit.
-- PDF privat tidak dapat dibaca endpoint Vercel tanpa OAuth. Gunakan izin publik hanya untuk dokumen yang memang boleh didistribusikan.
-- Jangan mempublikasikan koleksi tanpa memastikan hak distribusinya.
+- Apps Script memiliki kuota dan batas waktu eksekusi; hasil katalog di-cache 15 menit.
+- Cover pertama kali membutuhkan akses ke PDF, sehingga akan muncul bertahap.
+- PDF privat tidak dapat dialirkan oleh endpoint publik Vercel.
+- Pastikan koleksi yang dipublikasikan memiliki hak distribusi yang sesuai.
