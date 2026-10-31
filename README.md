@@ -1,65 +1,60 @@
-# RuangBaca v6.2.1 — Connector Compatibility Fix
+# RuangBaca v6.3 — All Drive Categories
 
-Perpustakaan digital dengan katalog Google Drive, kategori dinamis, cover halaman pertama, animasi membuka buku, dan reader responsif.
+RuangBaca menampilkan kategori berdasarkan seluruh folder dan shortcut folder tingkat utama di Google Drive, lalu memuat semua buku ketika kategori dipilih.
 
-## Perbaikan v6.2
+## Perbaikan v6.3
 
-- Kategori utama dibaca terlebih dahulu tanpa menunggu pemindaian ribuan PDF.
-- Buku dimuat saat kategori dipilih, maksimal 300 buku per kategori per sesi.
-- Pemindaian Apps Script memakai round-robin/BFS agar satu folder besar tidak menghabiskan seluruh batas katalog.
-- Cover menggunakan thumbnail Google Drive yang biasanya tampil sekitar satu detik.
-- PDF.js hanya digunakan sebagai fallback jika thumbnail Drive gagal.
-- URL Apps Script tetap tertanam; pengguna hanya paste link folder Drive.
+- Membaca semua kategori utama, termasuk shortcut seperti **Self Improvement**.
+- Tidak lagi memindai 2.500 PDF secara depth-first dari kategori pertama.
+- Setiap kategori dimuat terpisah agar kategori besar tidak menutupi kategori lain.
+- Maksimal 2.500 buku per kategori, naik dari 300 buku.
+- Pemindaian folder menggunakan round-robin/BFS, deduplikasi, dan pencegahan loop shortcut.
+- Cover menggunakan thumbnail Google Drive terlebih dahulu; PDF.js menjadi fallback.
+- Frontend tetap kompatibel dengan konektor lama, tetapi hasil konektor lama ditandai sebagai koleksi sementara dan mungkin tidak lengkap.
+- Cache-busting `v6.3.0` mencegah Chrome HP memakai JavaScript versi lama.
 
-## Perbaikan v6.2.1
+## Kenapa sebelumnya hanya dua kategori?
 
-- Frontend otomatis mendeteksi konektor Apps Script versi lama.
-- Jika action `categories` belum tersedia, website beralih ke mode kompatibilitas `catalog` tanpa berhenti pada pesan “Action tidak didukung”.
-- Error teknis tidak lagi ditampilkan panjang di dialog pengguna.
-- Version query pada `app.js` dan `styles.css` mencegah browser HP memakai aset lama dari cache.
+Frontend sudah baru, tetapi deployment Google Apps Script aktif masih memakai `Code.gs` lama. Konektor lama memindai seluruh koleksi secara depth-first dan berhenti setelah 2.500 PDF. Akibatnya kategori **Belajar AI** dan **Persiapan UTBK** menghabiskan batas sebelum kategori lain diperiksa.
 
-## WAJIB: perbarui deployment Apps Script
+Tulisan “mode kompatibilitas” pada website berarti deployment Apps Script belum diperbarui.
 
-Perubahan `Code.gs` di GitHub tidak otomatis memperbarui Web App Apps Script.
+## WAJIB: update Web App Google Apps Script
 
-1. Buka project Apps Script yang URL-nya dipakai RuangBaca.
-2. Ganti seluruh isi editor dengan file terbaru `apps-script/Code.gs`.
-3. Klik **Deploy → Manage deployments**.
-4. Klik ikon pensil/edit pada deployment Web App.
-5. Pada **Version**, pilih **New version**.
-6. Klik **Deploy**.
+Upload GitHub saja tidak mengubah Google Apps Script.
+
+1. Buka project Apps Script yang dipakai RuangBaca.
+2. Buka file `Code.gs`.
+3. Hapus seluruh isinya, lalu paste isi `apps-script/Code.gs` dari paket ini.
+4. Klik **Deploy → Manage deployments**.
+5. Klik ikon pensil pada Web App aktif.
+6. Pilih **New version**.
+7. Klik **Deploy**.
 
 Gunakan deployment yang sama agar URL `/exec` tidak berubah.
 
-## Publish website
+## Publish GitHub/Vercel
 
-Upload semua isi ZIP ke root repository GitHub yang terhubung ke Vercel. Minimal file yang wajib berubah:
+Upload seluruh isi ZIP ke root repository. File minimal yang berubah:
 
 ```text
-app.js
 index.html
+app.js
 README.md
 apps-script/Code.gs
 ```
 
-`apps-script/Code.gs` di GitHub hanya menjadi source/backup; tetap lakukan langkah deployment Apps Script di atas.
+`apps-script/Code.gs` di GitHub hanya source/backup. Langkah deployment Apps Script di atas tetap wajib.
 
-## Cara penggunaan
+## Cara kerja setelah update
 
-1. Tekan **Tambah koleksi**.
-2. Paste link folder Google Drive.
-3. Tekan **Tampilkan koleksi**.
-4. Pilih kategori; buku kategori tersebut akan dimuat ketika dibutuhkan.
+1. Paste link folder Google Drive.
+2. Semua kategori utama langsung ditampilkan.
+3. Pilih kategori seperti **Self Improvement**.
+4. Seluruh PDF dalam kategori tersebut dipindai dan ditampilkan, sampai batas 2.500 buku per kategori.
+5. Katalog kategori di-cache selama 15 menit.
 
-## Fitur reader
-
-- Cover otomatis halaman pertama.
-- Dua halaman di desktop, satu halaman di HP.
-- Swipe, tombol halaman, slider, zoom 65–180%, fullscreen, dan keyboard arrow.
-- Light/dark mode.
-- Cache katalog dan cover.
-
-## Pengujian lokal
+## Pengujian
 
 ```bash
 node --test tests/api.test.js
@@ -68,10 +63,8 @@ python3 tests/mock_server.py
 
 Buka `http://127.0.0.1:8767/index.html`.
 
-## Catatan
+## Catatan izin
 
-- Katalog Apps Script di-cache selama 15 menit.
-- Kategori ditampilkan cepat, lalu isi kategori dimuat on-demand.
-- File dan target shortcut harus dapat diakses oleh akun Apps Script.
-- PDF yang dibuka melalui website harus memiliki izin **Anyone with the link → Viewer**.
+- Folder utama, subfolder, dan target shortcut harus dapat diakses akun yang menjalankan Apps Script.
+- PDF yang dibaca melalui website harus memiliki izin **Anyone with the link → Viewer**.
 - Pastikan koleksi yang dipublikasikan memiliki hak distribusi yang sesuai.
