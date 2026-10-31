@@ -1,4 +1,4 @@
-# RuangBaca v6.2 — Fast Categories & Covers
+# RuangBaca v6.2.1 — Connector Compatibility Fix
 
 Perpustakaan digital dengan katalog Google Drive, kategori dinamis, cover halaman pertama, animasi membuka buku, dan reader responsif.
 
@@ -10,6 +10,13 @@ Perpustakaan digital dengan katalog Google Drive, kategori dinamis, cover halama
 - Cover menggunakan thumbnail Google Drive yang biasanya tampil sekitar satu detik.
 - PDF.js hanya digunakan sebagai fallback jika thumbnail Drive gagal.
 - URL Apps Script tetap tertanam; pengguna hanya paste link folder Drive.
+
+## Perbaikan v6.2.1
+
+- Frontend otomatis mendeteksi konektor Apps Script versi lama.
+- Jika action `categories` belum tersedia, website beralih ke mode kompatibilitas `catalog` tanpa berhenti pada pesan “Action tidak didukung”.
+- Error teknis tidak lagi ditampilkan panjang di dialog pengguna.
+- Version query pada `app.js` dan `styles.css` mencegah browser HP memakai aset lama dari cache.
 
 ## WAJIB: perbarui deployment Apps Script
 
