@@ -18,20 +18,20 @@ function doGet(e){
       const cached=cacheRead_(cacheId);
       if(cached){result=cached}else{
         const categories=listCategories_(root);
-        result={ok:true,folderId:folderId,folderName:root.getName(),count:categories.length,generatedAt:new Date().toISOString(),categories:categories};
+        result={ok:true,apiVersion:2,folderId:folderId,folderName:root.getName(),count:categories.length,generatedAt:new Date().toISOString(),categories:categories};
         cacheWrite_(cacheId,result);
       }
     }else if(action==='catalog'){
       const categoryId=String(e.parameter.categoryId||'');
       const categoryName=String(e.parameter.categoryName||'Umum');
       const categoryKey=String(e.parameter.categoryKey||'');
-      const requested=Math.max(24,Math.min(600,Number(e.parameter.limit||300)));
+      const requested=Math.max(24,Math.min(CONFIG.MAX_BOOKS,Number(e.parameter.limit||CONFIG.MAX_BOOKS)));
       const target=categoryId?getFolder_(categoryId,categoryKey):root;
       const cacheId=(categoryId?'category_'+categoryId:'catalog_'+folderId)+'_'+requested;
       const cached=cacheRead_(cacheId);
       if(cached){result=cached}else{
         const books=scanCatalog_(target,categoryId?[categoryName]:[],requested);
-        result={ok:true,folderId:folderId,folderName:root.getName(),category:categoryName,count:books.length,limit:requested,truncated:books.length>=requested,generatedAt:new Date().toISOString(),books:books};
+        result={ok:true,apiVersion:2,folderId:folderId,folderName:root.getName(),category:categoryName,count:books.length,limit:requested,truncated:books.length>=requested,generatedAt:new Date().toISOString(),books:books};
         cacheWrite_(cacheId,result);
       }
     }else{
