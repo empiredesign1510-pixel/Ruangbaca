@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,650&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6.4.0">
+  <link rel="stylesheet" href="styles.css?v=6.5.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
@@ -68,25 +68,23 @@
       <button class="icon-btn" id="backToLibrary" aria-label="Kembali ke perpustakaan">←</button>
       <div class="reader-title"><strong id="readerTitle">Judul buku</strong><span id="readerMeta">Menyiapkan buku…</span></div>
       <div class="reader-tools">
-        <button class="icon-btn" id="zoomOut" aria-label="Perkecil">−</button>
-        <output id="zoomLabel">100%</output>
-        <button class="icon-btn" id="zoomIn" aria-label="Perbesar">＋</button>
         <button class="icon-btn optional-tool" id="readerTheme" aria-label="Ganti tema">☾</button>
         <button class="icon-btn" id="fullscreen" aria-label="Layar penuh">⛶</button>
       </div>
     </header>
     <div class="reader-stage" id="readerStage">
       <div class="desk-light"></div>
-      <button class="page-nav prev" id="prevPage" aria-label="Halaman sebelumnya">‹</button>
       <div class="book-spread" id="bookSpread">
         <div class="reader-loader" id="readerLoader"><span></span><strong>Menyiapkan buku…</strong><small>Cover sudah terbuka, sebentar lagi bisa dibaca</small></div>
       </div>
-      <button class="page-nav next" id="nextPage" aria-label="Halaman berikutnya">›</button>
     </div>
     <footer class="reader-footer">
-      <span id="pageInfo">Halaman —</span>
-      <input id="pageSlider" type="range" min="1" max="1" value="1" aria-label="Pilih halaman">
-      <span class="reader-hint">Geser halaman atau tekan ← →</span>
+      <button class="footer-page-nav" id="prevPage" aria-label="Halaman sebelumnya">‹</button>
+      <div class="reader-progress">
+        <span id="pageInfo">Halaman —</span>
+        <input id="pageSlider" type="range" min="1" max="1" value="1" aria-label="Pilih halaman">
+      </div>
+      <button class="footer-page-nav next" id="nextPage" aria-label="Halaman berikutnya">›</button>
     </footer>
   </section>
 
@@ -106,6 +104,6 @@
   <div class="opening-book" id="openingBook" hidden aria-hidden="true"></div>
   <div class="toast" id="toast" role="status"></div>
   <input id="localPdf" type="file" accept="application/pdf" hidden>
-  <script src="app.js?v=6.4.0"></script>
+  <script src="app.js?v=6.5.0"></script>
 </body>
 </html>
