@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,650&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6.5.0">
+  <link rel="stylesheet" href="styles.css?v=6.6.0">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
@@ -81,7 +81,8 @@
     <footer class="reader-footer">
       <button class="footer-page-nav" id="prevPage" aria-label="Halaman sebelumnya">‹</button>
       <div class="reader-progress">
-        <span id="pageInfo">Halaman —</span>
+        <label class="page-jump" for="pageNumber">Halaman <input id="pageNumber" type="number" min="1" max="1" value="1" inputmode="numeric" aria-label="Nomor halaman"><span id="pageTotal">/ —</span></label>
+        <output id="pageInfo" class="visually-hidden">Halaman —</output>
         <input id="pageSlider" type="range" min="1" max="1" value="1" aria-label="Pilih halaman">
       </div>
       <button class="footer-page-nav next" id="nextPage" aria-label="Halaman berikutnya">›</button>
@@ -104,6 +105,6 @@
   <div class="opening-book" id="openingBook" hidden aria-hidden="true"></div>
   <div class="toast" id="toast" role="status"></div>
   <input id="localPdf" type="file" accept="application/pdf" hidden>
-  <script src="app.js?v=6.5.0"></script>
+  <script src="app.js?v=6.6.0"></script>
 </body>
 </html>
